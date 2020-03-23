@@ -22,7 +22,9 @@ sap.ui.define([
 		},
 		
 		onItemPress: function(oEvent) {
-		    this.getOwnerComponent().getRouter().navTo("kanban");
+		    this.getOwnerComponent().getRouter().navTo("kanban", {
+		        id: "0"
+		    });
 		}
 	});
 });

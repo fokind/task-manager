@@ -11,6 +11,27 @@ sap.ui.define([
 	var ButtonType = mobileLibrary.ButtonType;
 
 	return Controller.extend("fokind.kanban.controller.Kanban", {
+      _onRouteMatched: function(oEvent) {
+        var oView = this.getView();
+        // var sId = oEvent.getParameter("arguments").id;
+        // var aItems = this.getView().getModel().getProperty("/Items");
+        // var oItem = aItems.filter(function(e) {
+        //     return e.id === sId;
+        // })[0];
+        // var iIndex = aItems.indexOf(oItem);
+
+        // oView.bindElement({
+        //   path: "/Items/" + iIndex
+        // });
+        oView.bindElement({
+            model: "odata",
+          path: "/Projects('0')",
+          parameters: {
+              $expand: "ToDo"
+          }
+        });
+      },
+
 	    _openDialog: function (sSummary, fnCallback) {
 			var oDialog = new Dialog({
 				title: 'Summary',

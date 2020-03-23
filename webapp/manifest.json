@@ -4,6 +4,15 @@
 		"type": "application",
 		"applicationVersion": {
 			"version": "1.0.0"
+		},
+		"dataSources": {
+    	  "default": {
+    		"uri": "/odata/",
+    		"type": "OData",
+    		"settings": {
+    		  "odataVersion": "2.0"
+    		}
+    	  }
 		}
 	},
 	"sap.ui5": {
@@ -13,6 +22,16 @@
 			}
 		},
 		"models": {
+    	  "odata": {
+    		"dataSource": "default",
+                    "settings" : {
+                        "autoExpandSelect" : false,
+                        "operationMode" : "Server",
+                        "synchronizationMode" : "None",
+                        "groupId": "$direct"
+                    },
+                    "type" : "sap.ui.model.odata.v4.ODataModel"
+    	  },
 			"": {
 				"type": "sap.ui.model.json.JSONModel",
 				"uri": "./data/data.json"
@@ -38,7 +57,7 @@
 					"target": "projects"
 				},
 			    {
-					"pattern": "kanban",
+					"pattern": "kanban/{id}",
 					"name": "kanban",
 					"target": "kanban"
 				}

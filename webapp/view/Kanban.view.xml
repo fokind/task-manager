@@ -5,11 +5,11 @@
 		<Page title="Kanban"
 		showNavButton="true" 
     navButtonPress="onBackPress" >
-			<grid:CSSGrid gridTemplateColumns="repeat({=${/Kanban}.length}, 1fr)" items="{/Kanban}">
-				<List items="{tasks}">
+			<grid:CSSGrid gridTemplateColumns="repeat(3, 1fr)">
+				<List items="{odata>ToDo}">
 					<headerToolbar>
 						<Toolbar>
-							<Title text="{status}"/>
+							<Title text="To do"/>
 						</Toolbar>
 					</headerToolbar>
 					<dragDropConfig>
@@ -17,7 +17,7 @@
 						<dnd:DropInfo groupName="taskList" targetAggregation="items" dropPosition="Between" drop="onDrop"/>
 						<dnd:DragDropInfo sourceAggregation="items" targetAggregation="items" dropPosition="Between" drop="onDrop"/>
 					</dragDropConfig>
-					<StandardListItem title="{summary}" type="Active" press="onDetailPress"/>
+					<StandardListItem title="{odata>summary}" type="Active" press="onDetailPress"/>
 				</List>
 			</grid:CSSGrid>
 		</Page>

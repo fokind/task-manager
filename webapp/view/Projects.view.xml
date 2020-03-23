@@ -3,7 +3,7 @@
 	xmlns="sap.m"
 	displayBlock="true">
 		<Page title="Projects">
-			<List items="{/Projects}" id="items">
+			<List items="{odata>/Projects}" id="items">
 				<headerToolbar>
 					<Toolbar>
 						<Title text="Projects"/>
@@ -11,7 +11,7 @@
 						<Button text="Add" press="onAddPress"/>
 					</Toolbar>
 				</headerToolbar>
-				<StandardListItem title="{title}"
+				<StandardListItem title="{odata>title}"
     				press="onItemPress"
     				type="Navigation"/>
 			</List>
