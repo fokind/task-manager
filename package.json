@@ -1,0 +1,34 @@
+{
+  "name": "fokind-kanban",
+  "version": "1.0.0",
+  "description": "OpenUI5 Kanban",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fokind/kanban"
+  },
+  "homepage": "https://github.com/fokind/kanban",
+  "keywords": [
+    "ui5",
+    "openui5",
+    "kanban"
+  ],
+  "author": {
+    "name": "Dmitry Fokin"
+  },
+  "license": "MIT",
+  "private": false,
+  "main": "dist/index.html",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified. Please add some.\" && exit 1",
+    "start": "ui5 serve -o",
+    "build": "ui5 build --clean-dist"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@ui5/cli": "^1.13.0",
+    "eslint": "^6.8.0"
+  }
+}
