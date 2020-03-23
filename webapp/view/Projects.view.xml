@@ -1,19 +1,21 @@
-<mvc:View controllerName="fokind.kanban.controller.Projects"
-    xmlns:mvc="sap.ui.core.mvc" 
-	xmlns="sap.m"
+<mvc:View controllerName="fokind.kanban.controller.Projects" 
+	xmlns:mvc="sap.ui.core.mvc" 
+	xmlns="sap.m" 
 	displayBlock="true">
-		<Page title="Projects">
-			<List items="{odata>/Projects}" id="items">
-				<headerToolbar>
-					<Toolbar>
-						<Title text="Projects"/>
-						<ToolbarSpacer/>
-						<Button text="Add" press="onAddPress"/>
-					</Toolbar>
-				</headerToolbar>
-				<StandardListItem title="{odata>title}"
-    				press="onItemPress"
-    				type="Navigation"/>
-			</List>
-		</Page>
+	<Page title="Projects">
+		<List items="{odata>/Projects}" 
+			id="items">
+			<headerToolbar>
+				<Toolbar>
+					<Title text="Projects"/>
+					<ToolbarSpacer/>
+					<Button text="Add" 
+						press="onAddPress"/>
+				</Toolbar>
+			</headerToolbar>
+			<StandardListItem title="{odata>title}" 
+				press="onItemPress" 
+				type="Navigation"/>
+		</List>
+	</Page>
 </mvc:View>

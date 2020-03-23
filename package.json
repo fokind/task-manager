@@ -17,16 +17,20 @@
   },
   "license": "MIT",
   "private": false,
-  "main": "dist/index.html",
+  "main": "index.js",
   "files": [
     "dist"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified. Please add some.\" && exit 1",
-    "start": "ui5 serve -o",
+    "start": "node .",
+    "serve": "ui5 serve -o",
     "build": "ui5 build --clean-dist"
   },
-  "dependencies": {},
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1"
+  },
   "devDependencies": {
     "@ui5/cli": "^1.13.0",
     "eslint": "^6.8.0"

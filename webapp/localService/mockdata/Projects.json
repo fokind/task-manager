@@ -1,13 +1,6 @@
 [
-    {
-        "id": "0",
-        "title": "Project 0",
-        "ToDo": [
-            {
-                "id": "0",
-                "summary": "Task 0",
-                "projectId": "0"
-            }
-        ]
-    }
+  {
+    "id": "0",
+    "title": "Project 0"
+  }
 ]
