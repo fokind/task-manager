@@ -10,7 +10,7 @@ sap.ui.define([
 	
 	var ButtonType = mobileLibrary.ButtonType;
 
-	return Controller.extend("fokind.kanban.controller.App", {
+	return Controller.extend("fokind.kanban.controller.Kanban", {
 	    _openDialog: function (sSummary, fnCallback) {
 			var oDialog = new Dialog({
 				title: 'Summary',
@@ -82,6 +82,13 @@ sap.ui.define([
 
 			// обновить модель
 			oModel.refresh();
-		}
+		},
+		
+		      onBackPress: function() {
+        this.getOwnerComponent()
+          .getRouter()
+          .navTo("projects");
+      }
+
 	});
 });

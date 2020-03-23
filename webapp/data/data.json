@@ -1,4 +1,10 @@
-[{
+{
+    "Projects": [
+        {
+            "id": "",
+            "title": "Test"
+        }],
+"Kanban": [{
 	"status": "To do",
 	"tasks": [{
 		"summary": "Task"
@@ -35,4 +41,4 @@
 	}, {
 		"summary": "Task"
 	}]
-}]
+}]}

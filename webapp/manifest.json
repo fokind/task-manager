@@ -21,6 +21,38 @@
 		"rootView": {
 			"viewName": "fokind.kanban.view.App",
 			"type": "XML"
+		},
+		"routing": {
+			"config": {
+				"routerClass": "sap.m.routing.Router",
+				"viewType": "XML",
+				"viewPath": "fokind.kanban.view",
+				"controlId": "app",
+				"controlAggregation": "pages",
+				"async": true
+			},
+			"routes": [
+			    {
+					"pattern": "",
+					"name": "projects",
+					"target": "projects"
+				},
+			    {
+					"pattern": "kanban",
+					"name": "kanban",
+					"target": "kanban"
+				}
+		    ],
+			"targets": {
+				"projects": {
+					"viewName": "Projects",
+					"viewLevel": 1
+				},
+				"kanban": {
+					"viewName": "Kanban",
+					"viewLevel": 2
+				}
+			}
 		}
 	}
 }

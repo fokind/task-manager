@@ -8,6 +8,8 @@ sap.ui.define(["sap/ui/core/UIComponent"], function (UIComponent) {
 
 		init: function () {
 			UIComponent.prototype.init.apply(this, arguments);
+			var oRouter = this.getRouter();
+              oRouter.initialize();
 		}
 	});
 });

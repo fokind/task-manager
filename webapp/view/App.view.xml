@@ -1,24 +1,5 @@
-<mvc:View controllerName="fokind.kanban.controller.App"
-    xmlns:mvc="sap.ui.core.mvc" xmlns:grid="sap.ui.layout.cssgrid"
+<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns:grid="sap.ui.layout.cssgrid"
 	xmlns:dnd="sap.ui.core.dnd" xmlns="sap.m"
 	displayBlock="true">
-	<App>
-		<Page title="Kanban">
-			<grid:CSSGrid gridTemplateColumns="repeat({=${/}.length}, 1fr)" items="{/}">
-				<List items="{tasks}">
-					<headerToolbar>
-						<Toolbar>
-							<Title text="{status}"/>
-						</Toolbar>
-					</headerToolbar>
-					<dragDropConfig>
-						<dnd:DragInfo groupName="taskList" sourceAggregation="items"/>
-						<dnd:DropInfo groupName="taskList" targetAggregation="items" dropPosition="Between" drop="onDrop"/>
-						<dnd:DragDropInfo sourceAggregation="items" targetAggregation="items" dropPosition="Between" drop="onDrop"/>
-					</dragDropConfig>
-					<StandardListItem title="{summary}" type="Active" press="onDetailPress"/>
-				</List>
-			</grid:CSSGrid>
-		</Page>
-	</App>
+    <App id="app"/>
 </mvc:View>
