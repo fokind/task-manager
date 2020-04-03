@@ -51,12 +51,21 @@
                     "pattern": "",
                     "name": "projects",
                     "target": "projects"
+                },
+                {
+                    "pattern": "project/{id}",
+                    "name": "project",
+                    "target": "project"
                 }
             ],
             "targets": {
                 "projects": {
                     "viewName": "Projects",
                     "viewLevel": 1
+                },
+                "project": {
+                    "viewName": "Project",
+                    "viewLevel": 2
                 }
             }
         }

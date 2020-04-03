@@ -1,7 +1,10 @@
-<View xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" displayBlock="true">
+<View controllerName="fokind.kanban.controller.Projects" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" displayBlock="true">
 	<Page title="Projects">
-		<List items="{/Project}">
-			<StandardListItem title="{title}" />
+		<headerContent>
+			<Button icon="sap-icon://add" press="onAddPress" />
+		</headerContent>
+		<List items="{/Project}" id="projects">
+			<StandardListItem title="{title}" press="onItemPress" type="Navigation" />
 		</List>
 	</Page>
 </View>

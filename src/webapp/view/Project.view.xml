@@ -1,0 +1,4 @@
+<View controllerName="fokind.kanban.controller.Project" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" displayBlock="true">
+	<Page title="{title}" showNavButton="true" navButtonPress="onBackPress">
+	</Page>
+</View>
