@@ -1,0 +1,7 @@
+<View xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" displayBlock="true">
+	<Page title="Projects">
+		<List items="{/Project}">
+			<StandardListItem title="{title}" />
+		</List>
+	</Page>
+</View>

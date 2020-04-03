@@ -1,0 +1,64 @@
+{
+    "sap.app": {
+        "id": "fokind.kanban",
+        "type": "application",
+        "applicationVersion": {
+            "version": "1.0.0"
+        },
+        "dataSources": {
+            "default": {
+                "uri": "/odata/",
+                "type": "OData",
+                "settings": {
+                    "odataVersion": "4.0"
+                }
+            }
+        }
+    },
+    "sap.ui5": {
+        "dependencies": {
+            "libs": {
+                "sap.m": {}
+            }
+        },
+        "models": {
+            "": {
+                "dataSource": "default",
+                "settings": {
+                    "autoExpandSelect": false,
+                    "operationMode": "Server",
+                    "synchronizationMode": "None",
+                    "groupId": "$direct"
+                },
+                "type": "sap.ui.model.odata.v4.ODataModel"
+            }
+        },
+        "rootView": {
+            "viewName": "fokind.kanban.view.App",
+            "type": "XML"
+        },
+        "routing": {
+            "config": {
+                "routerClass": "sap.m.routing.Router",
+                "viewType": "XML",
+                "viewPath": "fokind.kanban.view",
+                "controlId": "app",
+                "controlAggregation": "pages",
+                "async": true
+            },
+            "routes": [
+                {
+                    "pattern": "",
+                    "name": "projects",
+                    "target": "projects"
+                }
+            ],
+            "targets": {
+                "projects": {
+                    "viewName": "Projects",
+                    "viewLevel": 1
+                }
+            }
+        }
+    }
+}
