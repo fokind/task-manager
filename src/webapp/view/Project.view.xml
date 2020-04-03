@@ -1,4 +1,10 @@
 <View controllerName="fokind.kanban.controller.Project" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" displayBlock="true">
 	<Page title="{title}" showNavButton="true" navButtonPress="onBackPress">
+		<headerContent>
+			<Button icon="sap-icon://add" press="onAddPress" />
+		</headerContent>
+		<List items="{Tasks}" id="tasks">
+			<StandardListItem title="{title}" />
+		</List>
 	</Page>
 </View>

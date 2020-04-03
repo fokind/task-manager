@@ -2,15 +2,15 @@ import { ObjectID } from "mongodb";
 import { createQuery } from "odata-v4-mongodb";
 import { Edm, odata, ODataController, ODataQuery } from "odata-v4-server";
 import connect from "../connect";
-import { Project } from "../model/Project";
+import { Task } from "../model/Task";
 
-const collectionName = "project";
+const collectionName = "task";
 
-@odata.type(Project)
-@Edm.EntitySet("Project")
-export class ProjectController extends ODataController {
+@odata.type(Task)
+@Edm.EntitySet("Tasks")
+export class TasksController extends ODataController {
     @odata.GET
-    public async get(@odata.query query: ODataQuery): Promise<Project[]> {
+    public async get(@odata.query query: ODataQuery): Promise<Task[]> {
         const db = await connect();
         const mongodbQuery = createQuery(query);
 
@@ -18,7 +18,7 @@ export class ProjectController extends ODataController {
             mongodbQuery.query._id = new ObjectID(mongodbQuery.query._id);
         }
 
-        const result: Project[] & { inlinecount?: number } =
+        const result: Task[] & { inlinecount?: number } =
             typeof mongodbQuery.limit === "number" && mongodbQuery.limit === 0
                 ? []
                 : await db
@@ -44,11 +44,11 @@ export class ProjectController extends ODataController {
     public async getOne(
         @odata.key key: string,
         @odata.query query: ODataQuery
-    ): Promise<Project> {
+    ): Promise<Task> {
         const { projection } = createQuery(query);
         const _id = new ObjectID(key);
         const db = await connect();
-        const instance = new Project(
+        const instance = new Task(
             await db.collection(collectionName).findOne({ _id }, { projection })
         );
         return instance;
@@ -56,10 +56,14 @@ export class ProjectController extends ODataController {
 
     @odata.POST
     public async post(
-        @odata.body
-        body: any
-    ): Promise<Project> {
-        const instance = new Project(body);
+        @odata.body { title, projectId }: any
+    ): Promise<Task> {
+        const instance = new Task({
+            title
+        });
+        if (projectId) {
+            instance.projectId = new ObjectID(projectId);
+        }
         const db = await connect();
         const collection = await db.collection(collectionName);
         instance._id = (await collection.insertOne(instance)).insertedId;

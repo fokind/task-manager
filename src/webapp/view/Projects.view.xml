@@ -3,7 +3,7 @@
 		<headerContent>
 			<Button icon="sap-icon://add" press="onAddPress" />
 		</headerContent>
-		<List items="{/Project}" id="projects">
+		<List items="{/Projects}" id="projects">
 			<StandardListItem title="{title}" press="onItemPress" type="Navigation" />
 		</List>
 	</Page>

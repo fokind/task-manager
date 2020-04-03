@@ -15,7 +15,25 @@ sap.ui.define(["sap/ui/core/mvc/Controller"], function(Controller) {
             var oView = this.getView();
             var sId = oEvent.getParameter("arguments").id;
             oView.bindElement({
-                path: "/Project('" + sId + "')"
+                path: "/Projects('" + sId + "')",
+				parameters: {
+					$expand: "Tasks"
+				}                
+            });
+        },
+
+        onAddPress: function() {
+            var sProjectId = this.getView().getBindingContext().getProperty("_id");
+            var oList = this.byId("tasks");
+            var oBinding = oList.getBinding("items");
+
+            var oContext = oBinding.create({
+                title: "Task",
+                projectId: sProjectId
+            });
+
+            oContext.created().then(function() {
+                oContext.getModel().refresh();
             });
         },
 

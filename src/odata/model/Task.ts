@@ -1,8 +1,7 @@
 import { ObjectID } from "mongodb";
 import { Edm } from "odata-v4-server";
-import { Task } from "./Task";
 
-export class Project {
+export class Task {
   @Edm.Key
   @Edm.Computed
   @Edm.String
@@ -11,8 +10,8 @@ export class Project {
   @Edm.String
   public title: string;
 
-  @Edm.Collection(Edm.EntityType(Edm.ForwardRef(() => Task)))
-  public Tasks: Task[];
+  @Edm.String
+  public projectId: ObjectID;
 
   constructor(data: any) {
     Object.assign(this, data);
