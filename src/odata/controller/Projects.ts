@@ -3,6 +3,7 @@ import { createQuery } from "odata-v4-mongodb";
 import { Edm, odata, ODataController, ODataQuery } from "odata-v4-server";
 import connect from "../connect";
 import { Project } from "../model/Project";
+import { ProjectState } from "../model/ProjectState";
 import { Task } from "../model/Task";
 
 const collectionName = "project";
@@ -11,8 +12,6 @@ const collectionName = "project";
 @Edm.EntitySet("Projects")
 export class ProjectsController extends ODataController {
     @(odata.POST("Tasks").$ref)
-    // @(odata.PATCH("Tasks").$ref)
-    // @(odata.DELETE("Tasks").$ref)
     @odata.GET
     public async get(@odata.query query: ODataQuery): Promise<Project[]> {
         const db = await connect();
@@ -81,7 +80,7 @@ export class ProjectsController extends ODataController {
         return await db
             .collection(collectionName)
             .updateOne({ _id }, { $set: delta })
-            .then(result => result.modifiedCount);
+            .then((result) => result.modifiedCount);
     }
 
     @odata.DELETE
@@ -90,7 +89,37 @@ export class ProjectsController extends ODataController {
         return (await connect())
             .collection(collectionName)
             .deleteOne({ _id })
-            .then(result => result.deletedCount);
+            .then((result) => result.deletedCount);
+    }
+
+    @odata.GET("States")
+    public async getStates(
+        @odata.result result: any,
+        @odata.query query: ODataQuery
+    ): Promise<ProjectState[]> {
+        const projectId = new ObjectID(result._id);
+        const mongodbQuery = createQuery(query);
+        const items: any = [
+            new ProjectState({
+                stateId: "todo",
+                projectId,
+                title: "To Do"
+            }),
+            new ProjectState({
+                stateId: "inprogress",
+                projectId,
+                title: "In Progress"
+            }),
+            new ProjectState({
+                stateId: "done",
+                projectId,
+                title: "Done"
+            }),
+        ];
+        if (mongodbQuery.inlinecount) {
+            items.inlinecount = 3;
+        }
+        return items;
     }
 
     @odata.GET("Tasks")
@@ -109,10 +138,10 @@ export class ProjectsController extends ODataController {
                       .find({
                           $and: [
                               {
-                                  projectId
+                                  projectId,
                               },
-                              mongodbQuery.query
-                          ]
+                              mongodbQuery.query,
+                          ],
                       })
                       .project(mongodbQuery.projection)
                       .skip(mongodbQuery.skip || 0)
@@ -124,10 +153,10 @@ export class ProjectsController extends ODataController {
                 .find({
                     $and: [
                         {
-                            projectId
+                            projectId,
                         },
-                        mongodbQuery.query
-                    ]
+                        mongodbQuery.query,
+                    ],
                 })
                 .project(mongodbQuery.projection)
                 .count(false);

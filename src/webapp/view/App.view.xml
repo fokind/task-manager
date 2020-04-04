@@ -1,3 +1,4 @@
-<View xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" displayBlock="true">
+<View xmlns:mvc="sap.ui.core.mvc" 
+	xmlns="sap.m" displayBlock="true">
 	<App id="app" />
 </View>

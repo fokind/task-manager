@@ -17,7 +17,7 @@ sap.ui.define(["sap/ui/core/mvc/Controller"], function(Controller) {
             oView.bindElement({
                 path: "/Projects('" + sId + "')",
 				parameters: {
-					$expand: "Tasks"
+					$expand: "Tasks,States($expand=Tasks)"
 				}                
             });
         },

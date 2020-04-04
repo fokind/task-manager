@@ -56,10 +56,11 @@ export class TasksController extends ODataController {
 
     @odata.POST
     public async post(
-        @odata.body { title, projectId }: any
+        @odata.body { title, stateId, projectId }: any
     ): Promise<Task> {
         const instance = new Task({
-            title
+            title,
+            stateId,
         });
         if (projectId) {
             instance.projectId = new ObjectID(projectId);
@@ -84,7 +85,7 @@ export class TasksController extends ODataController {
         return await db
             .collection(collectionName)
             .updateOne({ _id }, { $set: delta })
-            .then(result => result.modifiedCount);
+            .then((result) => result.modifiedCount);
     }
 
     @odata.DELETE
@@ -93,6 +94,6 @@ export class TasksController extends ODataController {
         return (await connect())
             .collection(collectionName)
             .deleteOne({ _id })
-            .then(result => result.deletedCount);
+            .then((result) => result.deletedCount);
     }
 }

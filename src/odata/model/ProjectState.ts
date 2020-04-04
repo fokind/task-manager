@@ -1,19 +1,18 @@
 import { ObjectID } from "mongodb";
 import { Edm } from "odata-v4-server";
-import { ProjectState } from "./ProjectState";
 import { Task } from "./Task";
 
-export class Project {
+export class ProjectState {
   @Edm.Key
-  @Edm.Computed
   @Edm.String
-  public _id: ObjectID;
+  public projectId: ObjectID;
+
+  @Edm.Key
+  @Edm.String
+  public stateId: string;
 
   @Edm.String
   public title: string;
-
-  @Edm.Collection(Edm.EntityType(Edm.ForwardRef(() => ProjectState)))
-  public States: ProjectState[];
 
   @Edm.Collection(Edm.EntityType(Edm.ForwardRef(() => Task)))
   public Tasks: Task[];
