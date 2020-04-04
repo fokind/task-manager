@@ -42,6 +42,40 @@ sap.ui.define(["sap/ui/core/mvc/Controller"], function (Controller) {
             // });
         },
 
+        _setTaskStatePromise: function (sTaskId, sStateId) {
+            return $.ajax({
+                async: true,
+                url: "/odata/Tasks('" + sTaskId + "')", // TODO получать путь из модели
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                data: JSON.stringify({
+                    stateId: sStateId,
+                }),
+            });
+        },
+
+        onDrop: function (oEvent) {
+            var sTaskId = oEvent
+                .getParameter("draggedControl")
+                .getBindingContext()
+                .getProperty("_id");
+
+            var sDropPosition = oEvent.getParameter("dropPosition");
+
+            var sStateId = oEvent
+                .getParameter("droppedControl")
+                .getBindingContext()
+                .getProperty(sDropPosition === "On" ? "_id" : "stateId");
+
+            this._setTaskStatePromise(sTaskId, sStateId).then(
+                function () {
+                    this.getView().getModel().refresh();
+                }.bind(this)
+            );
+        },
+
         onBackPress: function () {
             this.getOwnerComponent().getRouter().navTo("projects");
         },
