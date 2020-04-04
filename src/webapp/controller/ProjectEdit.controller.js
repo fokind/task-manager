@@ -18,9 +18,13 @@ sap.ui.define(
             _onRouteMatched: function (oEvent) {
                 var oView = this.getView();
                 var sId = oEvent.getParameter("arguments").id;
-                var oContextBinding = oView
-                    .getModel()
-                    .bindContext("/Projects('" + sId + "')");
+                var sPath = "/Projects('" + sId + "')";
+
+                oView.bindObject({
+                    path: sPath,
+                });
+
+                var oContextBinding = oView.getModel().bindContext(sPath);
 
                 oContextBinding.requestObject().then(function () {
                     var oContext = oContextBinding.getBoundContext();
@@ -30,8 +34,28 @@ sap.ui.define(
                 });
             },
 
+            _draftToJSON: function () {
+                var oDraftModel = this.getView().getModel("draft");
+                return JSON.stringify({
+                    title: oDraftModel.getProperty("/title"),
+                });
+            },
+
             onSavePress: function () {
-                // модель draft сохранить в odata
+                var oView = this.getView();
+                var sPath = oView.getBindingContext().getPath();
+
+                $.ajax({
+                    async: true,
+                    url: "/odata" + sPath, // TODO получать путь из модели
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    data: this._draftToJSON(),
+                }).then(function() {
+                    oView.getModel().refresh();
+                });
             },
 
             onBackPress: function () {
