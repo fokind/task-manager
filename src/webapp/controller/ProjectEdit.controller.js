@@ -29,6 +29,7 @@ sap.ui.define(
                 oContextBinding.requestObject().then(function () {
                     var oContext = oContextBinding.getBoundContext();
                     oView.getModel("draft").setData({
+                        _id: oContext.getProperty("_id"),
                         title: oContext.getProperty("title"),
                     });
                 });
@@ -53,13 +54,16 @@ sap.ui.define(
                         "Content-Type": "application/json",
                     },
                     data: this._draftToJSON(),
-                }).then(function() {
+                }).then(function () {
                     oView.getModel().refresh();
                 });
             },
 
             onBackPress: function () {
-                this.getOwnerComponent().getRouter().navTo("projects");
+                var sId = this.getView().getModel("draft").getProperty("/_id");
+                this.getOwnerComponent().getRouter().navTo("kanban", {
+                    id: sId,
+                });
             },
         });
     }

@@ -11,14 +11,14 @@ sap.ui.define(["sap/ui/core/mvc/Controller"], function (Controller) {
             var oList = this.byId("projects");
             var oBinding = oList.getBinding("items");
             var oContext = oBinding.create({
-                title: "Project",
+                title: "Project", // UNDONE переход на другую страницу
             });
         },
 
         onItemPress: function (oEvent) {
             this.getOwnerComponent()
                 .getRouter()
-                .navTo("projectEdit", {
+                .navTo("kanban", {
                     id: oEvent
                         .getSource()
                         .getBindingContext()

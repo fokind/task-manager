@@ -1,12 +1,12 @@
 sap.ui.define(["sap/ui/core/mvc/Controller"], function (Controller) {
     "use strict";
 
-    return Controller.extend("fokind.kanban.controller.ProjectKanban", {
+    return Controller.extend("fokind.kanban.controller.Kanban", {
         onInit: function () {
             var oComponent = this.getOwnerComponent();
             oComponent
                 .getRouter()
-                .getRoute("projectKanban")
+                .getRoute("kanban")
                 .attachMatched(this._onRouteMatched, this);
             this.getView().addStyleClass(oComponent.getContentDensityClass());
         },
@@ -19,6 +19,13 @@ sap.ui.define(["sap/ui/core/mvc/Controller"], function (Controller) {
                 parameters: {
                     $expand: "States($expand=Tasks)",
                 },
+            });
+        },
+
+        onEditPress: function () {
+            var sId = this.getView().getBindingContext().getProperty("_id");
+            this.getOwnerComponent().getRouter().navTo("projectEdit", {
+                id: sId,
             });
         },
 

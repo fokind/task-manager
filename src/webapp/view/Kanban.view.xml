@@ -1,10 +1,11 @@
-<View controllerName="fokind.kanban.controller.ProjectKanban" 
+<View controllerName="fokind.kanban.controller.Kanban" 
 	xmlns:mvc="sap.ui.core.mvc" 
 	xmlns:grid="sap.ui.layout.cssgrid" 
 	xmlns:dnd="sap.ui.core.dnd" 
 	xmlns="sap.m" displayBlock="true">
-	<Page title="{title}" showNavButton="true" navButtonPress="onBackPress">
+	<Page title="Project: {draft>/title}" showNavButton="true" navButtonPress="onBackPress">
 		<headerContent>
+			<Button icon="sap-icon://edit" press="onEditPress" />
 			<Button icon="sap-icon://add" press="onAddPress" />
 		</headerContent>
 		<grid:CSSGrid gridTemplateColumns="repeat(3, 1fr)" items="{

@@ -32,9 +32,9 @@
                 },
                 "type": "sap.ui.model.odata.v4.ODataModel"
             },
-			"draft": {
-				"type": "sap.ui.model.json.JSONModel"
-			}
+            "draft": {
+                "type": "sap.ui.model.json.JSONModel"
+            }
         },
         "rootView": {
             "viewName": "fokind.kanban.view.App",
@@ -56,14 +56,14 @@
                     "target": "projects"
                 },
                 {
+                    "pattern": "kanban/{id}",
+                    "name": "kanban",
+                    "target": "kanban"
+                },
+                {
                     "pattern": "project/{id}/edit",
                     "name": "projectEdit",
                     "target": "projectEdit"
-                },
-                {
-                    "pattern": "project/{id}/kanban",
-                    "name": "projectKanban",
-                    "target": "projectKanban"
                 }
             ],
             "targets": {
@@ -71,13 +71,13 @@
                     "viewName": "Projects",
                     "viewLevel": 1
                 },
-                "projectEdit": {
-                    "viewName": "ProjectEdit",
+                "kanban": {
+                    "viewName": "Kanban",
                     "viewLevel": 2
                 },
-                "projectKanban": {
-                    "viewName": "ProjectKanban",
-                    "viewLevel": 2
+                "projectEdit": {
+                    "viewName": "ProjectEdit",
+                    "viewLevel": 3
                 }
             }
         }
