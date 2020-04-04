@@ -9,11 +9,10 @@
 			<Button icon="sap-icon://add" press="onAddPress" />
 		</headerContent>
 		<grid:CSSGrid gridTemplateColumns="repeat(3, 1fr)" items="{
-				path: 'Tasks',
+				path: 'States',
 				templateShareable: true
 			}">
-			<Text text="{title}"/>
-			<!-- <List items="{
+			<List items="{
 					path: 'Tasks',
 					templateShareable: false
 				}">
@@ -28,7 +27,7 @@
 					<dnd:DragDropInfo sourceAggregation="items" targetAggregation="items" dropPosition="Between" drop="onDrop"/>
 				</dragDropConfig>
 				<StandardListItem title="{title}" type="Active" press="onDetailPress"/>
-			</List> -->
+			</List>
 		</grid:CSSGrid>
 	</Page>
 </View>

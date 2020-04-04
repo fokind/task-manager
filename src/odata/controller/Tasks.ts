@@ -18,7 +18,7 @@ export class TasksController extends ODataController {
             mongodbQuery.query._id = new ObjectID(mongodbQuery.query._id);
         }
 
-        const result: Task[] & { inlinecount?: number } =
+        const items: Task[] & { inlinecount?: number } =
             typeof mongodbQuery.limit === "number" && mongodbQuery.limit === 0
                 ? []
                 : await db
@@ -31,13 +31,13 @@ export class TasksController extends ODataController {
                       .toArray();
 
         if (mongodbQuery.inlinecount) {
-            result.inlinecount = await db
+            items.inlinecount = await db
                 .collection(collectionName)
                 .find(mongodbQuery.query)
                 .project(mongodbQuery.projection)
                 .count(false);
         }
-        return result;
+        return items;
     }
 
     @odata.GET
@@ -56,15 +56,13 @@ export class TasksController extends ODataController {
 
     @odata.POST
     public async post(
-        @odata.body { title, stateId, projectId }: any
+        @odata.body { title, stateId }: any
     ): Promise<Task> {
         const instance = new Task({
             title,
-            stateId,
+            stateId: new ObjectID(stateId),
         });
-        if (projectId) {
-            instance.projectId = new ObjectID(projectId);
-        }
+
         const db = await connect();
         const collection = await db.collection(collectionName);
         instance._id = (await collection.insertOne(instance)).insertedId;
@@ -79,6 +77,10 @@ export class TasksController extends ODataController {
         const db = await connect();
         if (delta._id) {
             delete delta._id;
+        }
+
+        if (delta.stateId) {
+            delta.stateId = new ObjectID(delta.stateId);
         }
 
         const _id = new ObjectID(key);

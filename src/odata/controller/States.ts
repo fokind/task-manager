@@ -2,19 +2,19 @@ import { ObjectID } from "mongodb";
 import { createQuery } from "odata-v4-mongodb";
 import { Edm, odata, ODataController, ODataQuery } from "odata-v4-server";
 import connect from "../connect";
-import { Project } from "../model/Project";
 import { State } from "../model/State";
+import { Task } from "../model/Task";
 
-const collectionName = "project";
+const collectionName = "state";
 
-@odata.type(Project)
-@Edm.EntitySet("Projects")
-export class ProjectsController extends ODataController {
-    @(odata.POST("States").$ref)
-    @(odata.PATCH("States").$ref)
-    @(odata.DELETE("States").$ref)
+@odata.type(State)
+@Edm.EntitySet("States")
+export class StatesController extends ODataController {
+    @(odata.POST("Tasks").$ref)
+    @(odata.PATCH("Tasks").$ref)
+    @(odata.DELETE("Tasks").$ref)
     @odata.GET
-    public async get(@odata.query query: ODataQuery): Promise<Project[]> {
+    public async get(@odata.query query: ODataQuery): Promise<State[]> {
         const db = await connect();
         const mongodbQuery = createQuery(query);
 
@@ -22,7 +22,11 @@ export class ProjectsController extends ODataController {
             mongodbQuery.query._id = new ObjectID(mongodbQuery.query._id);
         }
 
-        const result: Project[] & { inlinecount?: number } =
+        if (mongodbQuery.query.projectId) {
+            mongodbQuery.query.projectId = new ObjectID(mongodbQuery.query.projectId);
+        }
+
+        const items: State[] & { inlinecount?: number } =
             typeof mongodbQuery.limit === "number" && mongodbQuery.limit === 0
                 ? []
                 : await db
@@ -35,32 +39,35 @@ export class ProjectsController extends ODataController {
                       .toArray();
 
         if (mongodbQuery.inlinecount) {
-            result.inlinecount = await db
+            items.inlinecount = await db
                 .collection(collectionName)
                 .find(mongodbQuery.query)
                 .project(mongodbQuery.projection)
                 .count(false);
         }
-        return result;
+        return items;
     }
 
     @odata.GET
     public async getOne(
         @odata.key key: string,
         @odata.query query: ODataQuery
-    ): Promise<Project> {
+    ): Promise<State> {
         const { projection } = createQuery(query);
         const _id = new ObjectID(key);
         const db = await connect();
-        const instance = new Project(
+        const instance = new State(
             await db.collection(collectionName).findOne({ _id }, { projection })
         );
         return instance;
     }
 
     @odata.POST
-    public async post(@odata.body body: any): Promise<Project> {
-        const instance = new Project(body);
+    public async post(@odata.body { title, projectId }: any): Promise<State> {
+        const instance = new State({
+            title,
+            projectId: new ObjectID(projectId),
+        });
         const db = await connect();
         const collection = await db.collection(collectionName);
         instance._id = (await collection.insertOne(instance)).insertedId;
@@ -75,6 +82,10 @@ export class ProjectsController extends ODataController {
         const db = await connect();
         if (delta._id) {
             delete delta._id;
+        }
+
+        if (delta.projectId) {
+            delta.projectId = new ObjectID(delta.projectId);
         }
 
         const _id = new ObjectID(key);
@@ -93,23 +104,23 @@ export class ProjectsController extends ODataController {
             .then((result) => result.deletedCount);
     }
 
-    @odata.GET("States")
-    public async getStates(
+    @odata.GET("Tasks")
+    public async getTasks(
         @odata.result result: any,
         @odata.query query: ODataQuery
-    ): Promise<State[]> {
-        const projectId = new ObjectID(result._id);
+    ): Promise<Task[]> {
+        const stateId = new ObjectID(result._id);
         const db = await connect();
-        const collection = db.collection("state");
+        const collection = db.collection("task");
         const mongodbQuery = createQuery(query);
-        const items: State[] & { inlinecount?: number } =
+        const items: Task[] & { inlinecount?: number } =
             typeof mongodbQuery.limit === "number" && mongodbQuery.limit === 0
                 ? []
                 : await collection
                       .find({
                           $and: [
                               {
-                                  projectId,
+                                  stateId,
                               },
                               mongodbQuery.query,
                           ],
@@ -124,7 +135,7 @@ export class ProjectsController extends ODataController {
                 .find({
                     $and: [
                         {
-                            projectId,
+                            stateId,
                         },
                         mongodbQuery.query,
                     ],

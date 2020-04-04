@@ -2,14 +2,14 @@ import { ObjectID } from "mongodb";
 import { Edm } from "odata-v4-server";
 import { Task } from "./Task";
 
-export class ProjectState {
+export class State {
   @Edm.Key
+  @Edm.Computed
+  @Edm.String
+  public _id: ObjectID;
+
   @Edm.String
   public projectId: ObjectID;
-
-  @Edm.Key
-  @Edm.String
-  public stateId: string;
 
   @Edm.String
   public title: string;
