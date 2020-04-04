@@ -1,0 +1,13 @@
+<View controllerName="fokind.kanban.controller.ProjectEdit" 
+	xmlns:mvc="sap.ui.core.mvc" 
+	xmlns:form="sap.ui.layout.form" 
+	xmlns="sap.m" displayBlock="true">
+	<Page title="Project: {draft>/title}" showNavButton="true" navButtonPress="onBackPress">
+		<form:SimpleForm editable="true" layout="ResponsiveGridLayout">
+			<form:content>
+				<Label text="Title"/>
+				<Input value="{draft>/title}"/>
+			</form:content>
+		</form:SimpleForm>
+	</Page>
+</View>

@@ -1,4 +1,4 @@
-<View controllerName="fokind.kanban.controller.Project" 
+<View controllerName="fokind.kanban.controller.ProjectKanban" 
 	xmlns:mvc="sap.ui.core.mvc" 
 	xmlns:grid="sap.ui.layout.cssgrid" 
 	xmlns:dnd="sap.ui.core.dnd" 
