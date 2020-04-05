@@ -14,11 +14,43 @@ sap.ui.define(["sap/ui/core/mvc/Controller"], function (Controller) {
         _onRouteMatched: function (oEvent) {
             var oView = this.getView();
             var sId = oEvent.getParameter("arguments").id;
-            oView.bindElement({
-                path: "/Projects('" + sId + "')",
+            var sPath = "/Projects('" + sId + "')";
+            oView.bindObject({
+                path: sPath,
                 parameters: {
                     $expand: "States($expand=Tasks)",
                 },
+            });
+
+            var oContext = oView.getBindingContext();
+            var oModel = oView.getModel();
+            var oStatesBinding = oModel.bindList("States", oContext);
+            oContext.requestObject().then(function () {
+                var oDraft = {
+                    States: oStatesBinding
+                        .getContexts()
+                        .map(function (oStateContext) {
+                            return {
+                                _id: oStateContext.getProperty("_id"),
+                                title: oStateContext.getProperty("title"),
+                                Tasks: oModel
+                                    .bindList("Tasks", oStateContext)
+                                    .getContexts()
+                                    .map(function (oTaskContext) {
+                                        return {
+                                            _id: oTaskContext.getProperty(
+                                                "_id"
+                                            ),
+                                            title: oTaskContext.getProperty(
+                                                "title"
+                                            ),
+                                        };
+                                    }),
+                            };
+                        }),
+                };
+
+                oView.getModel("draft").setData(oDraft);
             });
         },
 
@@ -57,23 +89,46 @@ sap.ui.define(["sap/ui/core/mvc/Controller"], function (Controller) {
         },
 
         onDrop: function (oEvent) {
-            var sTaskId = oEvent
+            var oDraggedItem = oEvent
                 .getParameter("draggedControl")
-                .getBindingContext()
-                .getProperty("_id");
+                .getBindingContext("draft")
+                .getObject();
 
+            // удалить из исходного
+            var oDraggedList = oEvent
+                .getParameter("draggedControl")
+                .getParent()
+                .getBindingContext("draft")
+                .getProperty("Tasks");
+            var iDraggedIndex = oDraggedList.indexOf(oDraggedItem);
+            oDraggedList.splice(iDraggedIndex, 1);
+
+            // добавить в целевой
             var sDropPosition = oEvent.getParameter("dropPosition");
 
-            var sStateId = oEvent
-                .getParameter("droppedControl")
-                .getBindingContext()
-                .getProperty(sDropPosition === "On" ? "_id" : "stateId");
+            if (sDropPosition === "On") {
+                var oDroppedList = oEvent
+                    .getParameter("droppedControl")
+                    .getBindingContext("draft")
+                    .getProperty("Tasks");
+                oDroppedList.push(oDraggedItem);
+            } else {
+                var oDroppedItem = oEvent
+                    .getParameter("droppedControl")
+                    .getBindingContext("draft")
+                    .getObject();
+                var oDroppedList = oEvent
+                    .getParameter("droppedControl")
+                    .getParent()
+                    .getBindingContext("draft")
+                    .getProperty("Tasks");
+                var iDroppedIndex =
+                    oDroppedList.indexOf(oDroppedItem) +
+                    (sDropPosition === "After" ? 1 : 0);
+                oDroppedList.splice(iDroppedIndex, 0, oDraggedItem);
+            }
 
-            this._setTaskStatePromise(sTaskId, sStateId).then(
-                function () {
-                    this.getView().getModel().refresh();
-                }.bind(this)
-            );
+            this.getView().getModel("draft").refresh();
         },
 
         onBackPress: function () {

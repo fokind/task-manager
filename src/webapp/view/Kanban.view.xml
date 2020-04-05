@@ -3,22 +3,24 @@
 	xmlns:grid="sap.ui.layout.cssgrid" 
 	xmlns:dnd="sap.ui.core.dnd" 
 	xmlns="sap.m" displayBlock="true">
-	<Page title="Project: {draft>/title}" showNavButton="true" navButtonPress="onBackPress">
+	<Page title="Project: {title}" showNavButton="true" navButtonPress="onBackPress">
 		<headerContent>
 			<Button icon="sap-icon://edit" press="onEditPress" />
 			<Button icon="sap-icon://add" press="onAddPress" />
 		</headerContent>
 		<grid:CSSGrid gridTemplateColumns="repeat(3, 1fr)" items="{
-				path: 'States',
+				model: 'draft',
+				path: '/States',
 				templateShareable: true
 			}">
 			<List items="{
+					model: 'draft',
 					path: 'Tasks',
 					templateShareable: false
 				}">
 				<headerToolbar>
 					<Toolbar>
-						<Title text="{title}"/>
+						<Title text="{draft>title}"/>
 					</Toolbar>
 				</headerToolbar>
 				<dragDropConfig>
@@ -26,7 +28,7 @@
 					<dnd:DropInfo groupName="taskList" targetAggregation="items" dropPosition="Between" drop="onDrop"/>
 					<dnd:DragDropInfo sourceAggregation="items" targetAggregation="items" dropPosition="Between" drop="onDrop"/>
 				</dragDropConfig>
-				<StandardListItem title="{title}" type="Active" press="onDetailPress"/>
+				<StandardListItem title="{draft>title}" type="Active" press="onDetailPress"/>
 			</List>
 		</grid:CSSGrid>
 	</Page>
