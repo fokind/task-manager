@@ -1,4 +1,7 @@
-sap.ui.define(["sap/ui/core/mvc/Controller"], function (Controller) {
+sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast"], function (
+    Controller,
+    MessageToast
+) {
     "use strict";
 
     return Controller.extend("fokind.kanban.controller.Kanban", {
@@ -105,10 +108,12 @@ sap.ui.define(["sap/ui/core/mvc/Controller"], function (Controller) {
 
             // добавить в целевой
             var sDropPosition = oEvent.getParameter("dropPosition");
+            var oDroppedControl;
+            var oDroppedList;
 
             if (sDropPosition === "On") {
-                var oDroppedList = oEvent
-                    .getParameter("droppedControl")
+                oDroppedControl = oEvent.getParameter("droppedControl");
+                oDroppedList = oDroppedControl
                     .getBindingContext("draft")
                     .getProperty("Tasks");
                 oDroppedList.push(oDraggedItem);
@@ -117,9 +122,10 @@ sap.ui.define(["sap/ui/core/mvc/Controller"], function (Controller) {
                     .getParameter("droppedControl")
                     .getBindingContext("draft")
                     .getObject();
-                var oDroppedList = oEvent
+                oDroppedControl = oEvent
                     .getParameter("droppedControl")
-                    .getParent()
+                    .getParent();
+                oDroppedList = oDroppedControl
                     .getBindingContext("draft")
                     .getProperty("Tasks");
                 var iDroppedIndex =
@@ -129,6 +135,15 @@ sap.ui.define(["sap/ui/core/mvc/Controller"], function (Controller) {
             }
 
             this.getView().getModel("draft").refresh();
+
+            // сохранить изменения
+            var sTaskId = oDraggedItem._id;
+            var sStateId = oDroppedControl
+                .getBindingContext("draft")
+                .getProperty("_id");
+            this._setTaskStatePromise(sTaskId, sStateId).then(function () {
+                MessageToast.show("Изменения успешно сохранены.");
+            });
         },
 
         onBackPress: function () {
