@@ -7,6 +7,7 @@ sap.ui.define(
         "sap/m/TextArea",
         "sap/m/Button",
         "sap/m/library",
+        "fokind/kanban/model/model",
     ],
     function (
         Controller,
@@ -15,7 +16,8 @@ sap.ui.define(
         VBox,
         TextArea,
         Button,
-        mobileLibrary
+        mobileLibrary,
+        model
     ) {
         "use strict";
 
@@ -45,33 +47,7 @@ sap.ui.define(
                 });
 
                 var oContext = oView.getBindingContext();
-                var oModel = oView.getModel();
-                var oStatesBinding = oModel.bindList("States", oContext);
-                oContext.requestObject().then(function () {
-                    var oDraft = {
-                        States: oStatesBinding
-                            .getContexts()
-                            .map(function (oStateContext) {
-                                return {
-                                    _id: oStateContext.getProperty("_id"),
-                                    title: oStateContext.getProperty("title"),
-                                    Tasks: oModel
-                                        .bindList("Tasks", oStateContext)
-                                        .getContexts()
-                                        .map(function (oTaskContext) {
-                                            return {
-                                                _id: oTaskContext.getProperty(
-                                                    "_id"
-                                                ),
-                                                title: oTaskContext.getProperty(
-                                                    "title"
-                                                ),
-                                            };
-                                        }),
-                                };
-                            }),
-                    };
-
+                model.getKanban(oContext).then(function (oDraft) {
                     oView.getModel("draft").setData(oDraft);
                 });
             },
@@ -197,12 +173,12 @@ sap.ui.define(
 
                 // добавить в целевой
                 var sDropPosition = oEvent.getParameter("dropPosition");
-                var oDroppedControl;
+                var oDroppedListControl;
                 var oDroppedList;
 
                 if (sDropPosition === "On") {
-                    oDroppedControl = oEvent.getParameter("droppedControl");
-                    oDroppedList = oDroppedControl
+                    oDroppedListControl = oEvent.getParameter("droppedControl");
+                    oDroppedList = oDroppedListControl
                         .getBindingContext("draft")
                         .getProperty("Tasks");
                     oDroppedList.push(oDraggedItem);
@@ -211,10 +187,10 @@ sap.ui.define(
                         .getParameter("droppedControl")
                         .getBindingContext("draft")
                         .getObject();
-                    oDroppedControl = oEvent
+                    oDroppedListControl = oEvent
                         .getParameter("droppedControl")
                         .getParent();
-                    oDroppedList = oDroppedControl
+                    oDroppedList = oDroppedListControl
                         .getBindingContext("draft")
                         .getProperty("Tasks");
                     var iDroppedIndex =
@@ -227,11 +203,12 @@ sap.ui.define(
 
                 // сохранить изменения
                 var sTaskId = oDraggedItem._id;
-                var sStateId = oDroppedControl
+                var sStateId = oDroppedListControl
                     .getBindingContext("draft")
                     .getProperty("_id");
 
                 var oDelta = {
+                    // order: oDraggedItem.order,
                     stateId: sStateId,
                 };
 

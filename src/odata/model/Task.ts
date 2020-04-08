@@ -3,21 +3,24 @@ import { Edm } from "odata-v4-server";
 // import { State } from "./State";
 
 export class Task {
-  @Edm.Key
-  @Edm.Computed
-  @Edm.String
-  public _id: ObjectID;
+    @Edm.Key
+    @Edm.Computed
+    @Edm.String
+    public _id: ObjectID;
 
-  @Edm.String
-  public title: string;
+    @Edm.String
+    public title: string;
 
-  @Edm.String
-  public stateId: ObjectID;
+    @Edm.Double
+    public order: number;
 
-  // @Edm.EntityType(Edm.ForwardRef(() => State))
-  // public State: State;
+    @Edm.String
+    public stateId: ObjectID;
 
-  constructor(data: any) {
-    Object.assign(this, data);
-  }
+    // @Edm.EntityType(Edm.ForwardRef(() => State))
+    // public State: State;
+
+    constructor(data: any) {
+        Object.assign(this, data);
+    }
 }

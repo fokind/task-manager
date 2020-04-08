@@ -18,6 +18,12 @@ export class TasksController extends ODataController {
             mongodbQuery.query._id = new ObjectID(mongodbQuery.query._id);
         }
 
+        if (mongodbQuery.query.stateId) {
+            mongodbQuery.query.stateId = new ObjectID(
+                mongodbQuery.query.stateId
+            );
+        }
+
         const items: Task[] & { inlinecount?: number } =
             typeof mongodbQuery.limit === "number" && mongodbQuery.limit === 0
                 ? []
@@ -55,13 +61,12 @@ export class TasksController extends ODataController {
     }
 
     @odata.POST
-    public async post(
-        @odata.body { title, stateId }: any
-    ): Promise<Task> {
-        const instance = new Task({
-            title,
-            stateId: new ObjectID(stateId),
-        });
+    public async post(@odata.body body: any): Promise<Task> {
+        const instance = new Task(body);
+
+        if (body.stateId) {
+            instance.stateId = new ObjectID(body.stateId);
+        }
 
         const db = await connect();
         const collection = await db.collection(collectionName);
@@ -72,21 +77,22 @@ export class TasksController extends ODataController {
     @odata.PATCH
     public async patch(
         @odata.key key: string,
-        @odata.body delta: any
+        @odata.body body: any
     ): Promise<number> {
         const db = await connect();
-        if (delta._id) {
-            delete delta._id;
+
+        if (body._id) {
+            delete body._id;
         }
 
-        if (delta.stateId) {
-            delta.stateId = new ObjectID(delta.stateId);
+        if (body.stateId) {
+            body.stateId = new ObjectID(body.stateId);
         }
 
         const _id = new ObjectID(key);
         return await db
             .collection(collectionName)
-            .updateOne({ _id }, { $set: delta })
+            .updateOne({ _id }, { $set: body })
             .then((result) => result.modifiedCount);
     }
 

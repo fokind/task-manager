@@ -16,6 +16,9 @@
 			<List items="{
 					model: 'draft',
 					path: 'Tasks',
+					sorter : {
+						path : 'order'
+					},
 					templateShareable: false
 				}">
 				<headerToolbar>
