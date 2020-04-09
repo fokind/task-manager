@@ -10,6 +10,12 @@
 			<form:content>
 				<Label text="Title"/>
 				<Input value="{draft>/title}"/>
+				<Label text="States"/>
+				<MultiInput tokens="{draft>/States}" showValueHelp="false" submit="onStatesSumbmit">
+					<tokens>
+						<Token text="{draft>title}"/>
+					</tokens>
+				</MultiInput>
 			</form:content>
 		</form:SimpleForm>
 	</Page>

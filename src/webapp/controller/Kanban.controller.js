@@ -7,7 +7,6 @@ sap.ui.define(
         "sap/m/TextArea",
         "sap/m/Button",
         "sap/m/library",
-        "fokind/kanban/model/model",
     ],
     function (
         Controller,
@@ -16,8 +15,7 @@ sap.ui.define(
         VBox,
         TextArea,
         Button,
-        mobileLibrary,
-        model
+        mobileLibrary
     ) {
         "use strict";
 
@@ -46,10 +44,13 @@ sap.ui.define(
                     },
                 });
 
-                var oContext = oView.getBindingContext();
-                model.getKanban(oContext).then(function (oDraft) {
-                    oView.getModel("draft").setData(oDraft);
-                });
+                oView
+                    .getBindingContext()
+                    .requestObject()
+                    .then(function (oData) {
+                        console.log(oData);
+                        oView.getModel("kanban").setData(oData);
+                    });
             },
 
             onEditPress: function () {
@@ -127,7 +128,7 @@ sap.ui.define(
             onDetailPress: function (oEvent) {
                 var oBindingContext = oEvent
                     .getSource()
-                    .getBindingContext("draft");
+                    .getBindingContext("kanban");
                 var sPath = oBindingContext.getPath();
                 var sTitle = oBindingContext.getProperty("title");
 
@@ -159,14 +160,14 @@ sap.ui.define(
             onDrop: function (oEvent) {
                 var oDraggedItem = oEvent
                     .getParameter("draggedControl")
-                    .getBindingContext("draft")
+                    .getBindingContext("kanban")
                     .getObject();
 
                 // удалить из исходного
                 var oDraggedList = oEvent
                     .getParameter("draggedControl")
                     .getParent()
-                    .getBindingContext("draft")
+                    .getBindingContext("kanban")
                     .getProperty("Tasks");
                 var iDraggedIndex = oDraggedList.indexOf(oDraggedItem);
                 oDraggedList.splice(iDraggedIndex, 1);
@@ -179,19 +180,19 @@ sap.ui.define(
                 if (sDropPosition === "On") {
                     oDroppedListControl = oEvent.getParameter("droppedControl");
                     oDroppedList = oDroppedListControl
-                        .getBindingContext("draft")
+                        .getBindingContext("kanban")
                         .getProperty("Tasks");
                     oDroppedList.push(oDraggedItem);
                 } else {
                     var oDroppedItem = oEvent
                         .getParameter("droppedControl")
-                        .getBindingContext("draft")
+                        .getBindingContext("kanban")
                         .getObject();
                     oDroppedListControl = oEvent
                         .getParameter("droppedControl")
                         .getParent();
                     oDroppedList = oDroppedListControl
-                        .getBindingContext("draft")
+                        .getBindingContext("kanban")
                         .getProperty("Tasks");
                     var iDroppedIndex =
                         oDroppedList.indexOf(oDroppedItem) +
@@ -199,12 +200,12 @@ sap.ui.define(
                     oDroppedList.splice(iDroppedIndex, 0, oDraggedItem);
                 }
 
-                this.getView().getModel("draft").refresh();
+                this.getView().getModel("kanban").refresh();
 
                 // сохранить изменения
                 var sTaskId = oDraggedItem._id;
                 var sStateId = oDroppedListControl
-                    .getBindingContext("draft")
+                    .getBindingContext("kanban")
                     .getProperty("_id");
 
                 var oDelta = {

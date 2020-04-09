@@ -2,42 +2,37 @@ sap.ui.define([], function () {
     "use strict";
 
     return {
-        getKanban: function (oContext) {
-            var oModel = oContext.getModel();
-            var oStatesBinding = oModel.bindList("States", oContext);
-            return oContext.requestObject().then(function () {
-                var oDraft = {
-                    States: oStatesBinding
-                        .getContexts()
-                        .map(function (oStateContext) {
-                            return {
-                                _id: oStateContext.getProperty("_id"),
-                                title: oStateContext.getProperty("title"),
-                                Tasks: oModel
-                                    .bindList("Tasks", oStateContext)
-                                    .getContexts()
-                                    .map(function (oTaskContext) {
-                                        return {
-                                            _id: oTaskContext.getProperty(
-                                                "_id"
-                                            ),
-                                            title: oTaskContext.getProperty(
-                                                "title"
-                                            ),
-                                            order: oTaskContext.getProperty(
-                                                "order"
-                                            ),
-                                            stateId: oTaskContext.getProperty(
-                                                "stateId"
-                                            ),
-                                        };
-                                    }),
-                            };
-                        }),
+        _ajaxPromise: function (sMethod, sPath, oData) {
+            return new Promise(function (resolve, reject) {
+                var oOptions = {
+                    async: true,
+                    url: "/odata" + sPath, // TODO получать путь из модели
+                    method: sMethod,
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    success: resolve,
+                    error: reject,
                 };
 
-                return oDraft;
+                if (oData) {
+                    oOptions.data = JSON.stringify(oData);
+                }
+
+                $.ajax(oOptions);
             });
+        },
+
+        createPromise: function (sPath, oData) {
+            return this._ajaxPromise("POST", sPath, oData);
+        },
+
+        updatePromise: function (sPath, oData) {
+            return this._ajaxPromise("PATCH", sPath, oData);
+        },
+
+        deletePromise: function (sPath) {
+            return this._ajaxPromise("DELETE", sPath, oData);
         },
     };
 });

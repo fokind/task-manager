@@ -34,6 +34,9 @@
             },
             "draft": {
                 "type": "sap.ui.model.json.JSONModel"
+            },
+            "kanban": {
+                "type": "sap.ui.model.json.JSONModel"
             }
         },
         "rootView": {

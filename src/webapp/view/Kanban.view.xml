@@ -9,12 +9,12 @@
 			<Button icon="sap-icon://add" press="onAddPress" />
 		</headerContent>
 		<grid:CSSGrid gridTemplateColumns="repeat(3, 1fr)" items="{
-				model: 'draft',
+				model: 'kanban',
 				path: '/States',
 				templateShareable: true
 			}">
 			<List items="{
-					model: 'draft',
+					model: 'kanban',
 					path: 'Tasks',
 					sorter : {
 						path : 'order'
@@ -23,7 +23,7 @@
 				}">
 				<headerToolbar>
 					<Toolbar>
-						<Title text="{draft>title}"/>
+						<Title text="{kanban>title}"/>
 					</Toolbar>
 				</headerToolbar>
 				<dragDropConfig>
@@ -31,7 +31,7 @@
 					<dnd:DropInfo groupName="taskList" targetAggregation="items" dropPosition="Between" drop="onDrop"/>
 					<dnd:DragDropInfo sourceAggregation="items" targetAggregation="items" dropPosition="Between" drop="onDrop"/>
 				</dragDropConfig>
-				<StandardListItem title="{draft>title}" type="Active" press="onDetailPress"/>
+				<StandardListItem title="{kanban>title}" type="Active" press="onDetailPress"/>
 			</List>
 		</grid:CSSGrid>
 	</Page>
