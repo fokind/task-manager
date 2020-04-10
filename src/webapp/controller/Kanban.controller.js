@@ -40,7 +40,7 @@ sap.ui.define(
                 oView.bindObject({
                     path: sPath,
                     parameters: {
-                        $expand: "States($expand=Tasks)",
+                        $expand: "States($orderby=order;$expand=Tasks)",
                     },
                 });
 
@@ -48,7 +48,6 @@ sap.ui.define(
                     .getBindingContext()
                     .requestObject()
                     .then(function (oData) {
-                        console.log(oData);
                         oView.getModel("kanban").setData(oData);
                     });
             },

@@ -11,9 +11,15 @@
 				<Label text="Title"/>
 				<Input value="{draft>/title}"/>
 				<Label text="States"/>
-				<MultiInput tokens="{draft>/States}" showValueHelp="false" submit="onStatesSumbmit">
+				<MultiInput tokens="{
+						model: 'draft',
+						path: '/States',
+						sorter: {
+							path: 'order'
+						}
+					}" showValueHelp="false" submit="onStatesSumbmit">
 					<tokens>
-						<Token text="{draft>title}"/>
+						<Token text="{draft>title}" press="onStatePress" delete="onStateDelete"/>
 					</tokens>
 				</MultiInput>
 			</form:content>

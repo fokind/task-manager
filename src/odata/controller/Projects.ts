@@ -70,17 +70,17 @@ export class ProjectsController extends ODataController {
     @odata.PATCH
     public async patch(
         @odata.key key: string,
-        @odata.body delta: any
+        @odata.body body: any
     ): Promise<number> {
         const db = await connect();
-        if (delta._id) {
-            delete delta._id;
+        if (body._id) {
+            delete body._id;
         }
 
         const _id = new ObjectID(key);
         return await db
             .collection(collectionName)
-            .updateOne({ _id }, { $set: delta })
+            .updateOne({ _id }, { $set: body })
             .then((result) => result.modifiedCount);
     }
 

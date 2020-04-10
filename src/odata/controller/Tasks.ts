@@ -62,12 +62,11 @@ export class TasksController extends ODataController {
 
     @odata.POST
     public async post(@odata.body body: any): Promise<Task> {
-        const instance = new Task(body);
-
         if (body.stateId) {
-            instance.stateId = new ObjectID(body.stateId);
+            body.stateId = new ObjectID(body.stateId);
         }
 
+        const instance = new Task(body);
         const db = await connect();
         const collection = await db.collection(collectionName);
         instance._id = (await collection.insertOne(instance)).insertedId;

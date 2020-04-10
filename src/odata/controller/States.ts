@@ -23,7 +23,9 @@ export class StatesController extends ODataController {
         }
 
         if (mongodbQuery.query.projectId) {
-            mongodbQuery.query.projectId = new ObjectID(mongodbQuery.query.projectId);
+            mongodbQuery.query.projectId = new ObjectID(
+                mongodbQuery.query.projectId
+            );
         }
 
         const items: State[] & { inlinecount?: number } =
@@ -63,11 +65,12 @@ export class StatesController extends ODataController {
     }
 
     @odata.POST
-    public async post(@odata.body { title, projectId }: any): Promise<State> {
-        const instance = new State({
-            title,
-            projectId: new ObjectID(projectId),
-        });
+    public async post(@odata.body body: any): Promise<State> {
+        if (body.projectId) {
+            body.projectId = new ObjectID(body.projectId);
+        }
+
+        const instance = new State(body);
         const db = await connect();
         const collection = await db.collection(collectionName);
         instance._id = (await collection.insertOne(instance)).insertedId;
@@ -77,21 +80,21 @@ export class StatesController extends ODataController {
     @odata.PATCH
     public async patch(
         @odata.key key: string,
-        @odata.body delta: any
+        @odata.body body: any
     ): Promise<number> {
         const db = await connect();
-        if (delta._id) {
-            delete delta._id;
+        if (body._id) {
+            delete body._id;
         }
 
-        if (delta.projectId) {
-            delta.projectId = new ObjectID(delta.projectId);
+        if (body.projectId) {
+            body.projectId = new ObjectID(body.projectId);
         }
 
         const _id = new ObjectID(key);
         return await db
             .collection(collectionName)
-            .updateOne({ _id }, { $set: delta })
+            .updateOne({ _id }, { $set: body })
             .then((result) => result.modifiedCount);
     }
 

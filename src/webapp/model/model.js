@@ -32,7 +32,7 @@ sap.ui.define([], function () {
         },
 
         deletePromise: function (sPath) {
-            return this._ajaxPromise("DELETE", sPath, oData);
+            return this._ajaxPromise("DELETE", sPath);
         },
     };
 });

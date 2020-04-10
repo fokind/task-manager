@@ -8,9 +8,12 @@
 			<Button icon="sap-icon://edit" press="onEditPress" />
 			<Button icon="sap-icon://add" press="onAddPress" />
 		</headerContent>
-		<grid:CSSGrid gridTemplateColumns="repeat(3, 1fr)" items="{
+		<grid:CSSGrid gridTemplateColumns="repeat({= ${kanban>/States}.length}, 1fr)" items="{
 				model: 'kanban',
 				path: '/States',
+				sorter : {
+					path : 'order'
+				},
 				templateShareable: true
 			}">
 			<List items="{

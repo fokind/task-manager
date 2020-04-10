@@ -2,10 +2,11 @@ sap.ui.define(
     [
         "sap/ui/core/mvc/Controller",
         "sap/m/MessageToast",
-        "sap/m/Token",
+        "sap/ui/core/Fragment",
+        "sap/ui/model/json/JSONModel",
         "fokind/kanban/model/model",
     ],
-    function (Controller, MessageToast, Token, model) {
+    function (Controller, MessageToast, Fragment, JSONModel, model) {
         "use strict";
 
         return Controller.extend("fokind.kanban.controller.ProjectEdit", {
@@ -28,7 +29,7 @@ sap.ui.define(
                 oView.bindObject({
                     path: sPath,
                     parameters: {
-                        $expand: "States",
+                        $expand: "States($orderby=order)",
                     },
                 });
 
@@ -53,6 +54,66 @@ sap.ui.define(
                 oDraftModel.refresh();
             },
 
+            onStatePress: function (oEvent) {
+                var oView = this.getView();
+                var oBindingContext = oEvent
+                    .getSource()
+                    .getBindingContext("draft");
+
+                var oDialog = this.byId("editStateDialog");
+
+                if (!oDialog) {
+                    Fragment.load({
+                        id: oView.getId(),
+                        name: "fokind.kanban.fragment.EditStateDialog",
+                        controller: this,
+                    }).then(function (oDialog) {
+                        oView.addDependent(oDialog);
+                        oDialog.setModel(
+                            new JSONModel(oBindingContext.getObject()),
+                            "state"
+                        );
+                        oDialog.open();
+                    });
+                } else {
+                    oDialog.open();
+                }
+            },
+
+            onEditStateOkPress: function () {
+                var oDialog = this.byId("editStateDialog");
+                var oStateModel = oDialog.getModel("state");
+                var sId = oStateModel.getProperty("/_id");
+                var oDraftModel = this.getView().getModel("draft");
+                var oState = oDraftModel
+                    .getProperty("/States")
+                    .filter(function (e) {
+                        return e._id === sId;
+                    })[0];
+                oState.title = oStateModel.getProperty("/title");
+                if (!oState._METHOD) {
+                    oState._METHOD = "UPDATE";
+                }
+                oDraftModel.refresh();
+                oDialog.close();
+            },
+
+            onEditStateCancelPress: function () {
+                this.byId("editStateDialog").close();
+            },
+
+            onStateDelete: function (oEvent) {
+                var oBindingContext = oEvent
+                    .getSource()
+                    .getBindingContext("draft");
+                oBindingContext
+                    .getModel()
+                    .setProperty(
+                        oBindingContext.getPath() + "/_METHOD",
+                        "DELETE"
+                    );
+            },
+
             onSavePress: function () {
                 var oView = this.getView();
                 var sPath = oView.getBindingContext().getPath();
@@ -61,14 +122,12 @@ sap.ui.define(
                     title: oDraftModel.getProperty("/title"),
                 };
 
-                // console.log(oDraftModel);
                 Promise.all([
                     model.updatePromise(sPath, oData),
                     Promise.all(
                         oDraftModel
                             .getProperty("/States")
                             .map(function (oState) {
-                                console.log(oState);
                                 switch (oState._METHOD) {
                                     case "CREATE":
                                         return model.createPromise("/States", {
@@ -77,19 +136,26 @@ sap.ui.define(
                                             ),
                                             title: oState.title,
                                             order: oState.order,
+                                        }).then(function() {
+                                            delete oState._METHOD;
                                         });
-                                    case "UPDATE":
+                                    case "UPDATE": // UNDONE при переименовании или изменении порядка сортировки
                                         return model.updatePromise(
                                             "/States('" + oState._id + "')",
                                             {
                                                 title: oState.title,
                                                 order: oState.order,
                                             }
-                                        );
+                                        ).then(function() {
+                                            delete oState._METHOD;
+                                        });
                                     case "DELETE":
                                         return model.deletePromise(
                                             "/States('" + oState._id + "')"
-                                        );
+                                        ).then(function() {
+                                            delete oState._METHOD;
+                                            // TODO удалять из массива?
+                                        });
                                     default:
                                         return Promise.resolve();
                                 }
