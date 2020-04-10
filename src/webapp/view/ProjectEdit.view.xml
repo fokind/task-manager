@@ -4,7 +4,8 @@
 	xmlns="sap.m" displayBlock="true">
 	<Page title="Project: {draft>/title}" showNavButton="true" navButtonPress="onBackPress">
 		<headerContent>
-			<Button icon="sap-icon://save" press="onSavePress" />
+			<Button icon="sap-icon://delete" press="onDeleteProjectPress"/>
+			<Button icon="sap-icon://save" press="onSavePress"/>
 		</headerContent>
 		<form:SimpleForm editable="true" layout="ResponsiveGridLayout">
 			<form:content>

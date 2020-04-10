@@ -114,6 +114,16 @@ sap.ui.define(
                     );
             },
 
+            onDeleteProjectPress: function () {
+                var oView = this.getView();
+                var sPath = oView.getBindingContext().getPath();
+                model.deletePromise(sPath).then(function () {
+                    oView.getModel().refresh();
+                    MessageToast.show("Изменения успешно сохранены.");
+                    this.getOwnerComponent().getRouter().navTo("projects");
+                }.bind(this));
+            },
+
             onSavePress: function () {
                 var oView = this.getView();
                 var sPath = oView.getBindingContext().getPath();
