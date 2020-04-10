@@ -6,7 +6,7 @@
 	<Page title="Project: {title}" showNavButton="true" navButtonPress="onBackPress">
 		<headerContent>
 			<Button icon="sap-icon://edit" press="onEditPress" />
-			<Button icon="sap-icon://add" press="onAddPress" />
+			<Button icon="sap-icon://add" press="onAddTaskPress" />
 		</headerContent>
 		<grid:CSSGrid gridTemplateColumns="repeat({= ${kanban>/States}.length}, 1fr)" items="{
 				model: 'kanban',

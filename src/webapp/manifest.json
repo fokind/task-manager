@@ -37,6 +37,9 @@
             },
             "kanban": {
                 "type": "sap.ui.model.json.JSONModel"
+            },
+            "task": {
+                "type": "sap.ui.model.json.JSONModel"
             }
         },
         "rootView": {

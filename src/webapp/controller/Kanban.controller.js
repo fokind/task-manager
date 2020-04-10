@@ -6,7 +6,10 @@ sap.ui.define(
         "sap/m/VBox",
         "sap/m/TextArea",
         "sap/m/Button",
+        "sap/ui/core/Fragment",
+        "sap/ui/model/json/JSONModel",
         "sap/m/library",
+        "fokind/kanban/model/model",
     ],
     function (
         Controller,
@@ -15,7 +18,10 @@ sap.ui.define(
         VBox,
         TextArea,
         Button,
-        mobileLibrary
+        Fragment,
+        JSONModel,
+        mobileLibrary,
+        model
     ) {
         "use strict";
 
@@ -59,29 +65,58 @@ sap.ui.define(
                 });
             },
 
-            onAddPress: function () {
-                // var sProjectId = this.getView().getBindingContext().getProperty("_id");
-                // var oList = this.byId("tasks");
-                // var oBinding = oList.getBinding("items");
-                // var oContext = oBinding.create({
-                //     title: "Task",
-                //     projectId: sProjectId
-                // });
-                // oContext.created().then(function() {
-                //     oContext.getModel().refresh();
-                // });
+            onAddTaskPress: function () {
+                var oView = this.getView();
+                var oDialog = this.byId("createTaskDialog");
+                if (!oDialog) {
+                    Fragment.load({
+                        id: oView.getId(),
+                        name: "fokind.kanban.fragment.CreateTaskDialog",
+                        controller: this,
+                    }).then(function (oDialog) {
+                        oView.addDependent(oDialog);
+                        oDialog.setModel(new JSONModel({}), "task");
+                        oDialog.open();
+                    });
+                } else {
+                    oDialog.getModel("task").setData({});
+                    oDialog.open();
+                }
             },
 
-            _saveTaskPromise: function (sTaskId, oDelta) {
-                return $.ajax({
-                    async: true,
-                    url: "/odata/Tasks('" + sTaskId + "')", // TODO получать путь из модели
-                    method: "PATCH",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    data: JSON.stringify(oDelta),
-                });
+            onCreateTaskOkPress: function () {
+                // debugger;
+                var oDialog = this.byId("createTaskDialog");
+                var oTaskModel = oDialog.getModel("task");
+                var oKanbanModel = this.getView().getModel("kanban");
+                var aTasks = oKanbanModel.getProperty("/States/0/Tasks"); // хотя бы одна колонка должна быть
+                var iLength = aTasks.length;
+                var oTask = {
+                    title: oTaskModel.getProperty("/title"),
+                    order: iLength === 0 ? 0 : aTasks[iLength - 1].order + 1,
+                    stateId: oKanbanModel.getProperty("/States/0/_id"),
+                };
+                model
+                    .ajaxPromise("POST", "/Tasks", oTask)
+                    .then(function (oData) {
+                        console.log(oData);
+                        oTask._id = oData._id;
+                        aTasks.push(oTask);
+                        oKanbanModel.refresh();
+                        oDialog.close();
+                    });
+            },
+
+            onCreateTaskCancelPress: function () {
+                this.byId("createTaskDialog").close();
+            },
+
+            _saveTaskPromise: function (sTaskId, oData) {
+                return model.ajaxPromise(
+                    "PATCH",
+                    "/Tasks('" + sTaskId + "')",
+                    oData
+                );
             },
 
             _openDialog: function (sTitle, fnCallback) {

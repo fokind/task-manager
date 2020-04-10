@@ -117,11 +117,13 @@ sap.ui.define(
             onDeleteProjectPress: function () {
                 var oView = this.getView();
                 var sPath = oView.getBindingContext().getPath();
-                model.deletePromise(sPath).then(function () {
-                    oView.getModel().refresh();
-                    MessageToast.show("Изменения успешно сохранены.");
-                    this.getOwnerComponent().getRouter().navTo("projects");
-                }.bind(this));
+                model.ajaxPromise("DELETE", sPath).then(
+                    function () {
+                        oView.getModel().refresh();
+                        MessageToast.show("Изменения успешно сохранены.");
+                        this.getOwnerComponent().getRouter().navTo("projects");
+                    }.bind(this)
+                );
             },
 
             onSavePress: function () {
@@ -133,39 +135,47 @@ sap.ui.define(
                 };
 
                 Promise.all([
-                    model.updatePromise(sPath, oData),
+                    model.ajaxPromise("PATCH", sPath, oData),
                     Promise.all(
                         oDraftModel
                             .getProperty("/States")
                             .map(function (oState) {
                                 switch (oState._METHOD) {
                                     case "CREATE":
-                                        return model.createPromise("/States", {
-                                            projectId: oDraftModel.getProperty(
-                                                "/_id"
-                                            ),
-                                            title: oState.title,
-                                            order: oState.order,
-                                        }).then(function() {
-                                            delete oState._METHOD;
-                                        });
-                                    case "UPDATE": // UNDONE при переименовании или изменении порядка сортировки
-                                        return model.updatePromise(
-                                            "/States('" + oState._id + "')",
-                                            {
+                                        return model
+                                            .ajaxPromise("POST", "/States", {
+                                                projectId: oDraftModel.getProperty(
+                                                    "/_id"
+                                                ),
                                                 title: oState.title,
                                                 order: oState.order,
-                                            }
-                                        ).then(function() {
-                                            delete oState._METHOD;
-                                        });
+                                            })
+                                            .then(function () {
+                                                delete oState._METHOD;
+                                            });
+                                    case "UPDATE": // UNDONE при переименовании или изменении порядка сортировки
+                                        return model
+                                            .ajaxPromise(
+                                                "PATCH",
+                                                "/States('" + oState._id + "')",
+                                                {
+                                                    title: oState.title,
+                                                    order: oState.order,
+                                                }
+                                            )
+                                            .then(function () {
+                                                delete oState._METHOD;
+                                            });
                                     case "DELETE":
-                                        return model.deletePromise(
-                                            "/States('" + oState._id + "')"
-                                        ).then(function() {
-                                            delete oState._METHOD;
-                                            // TODO удалять из массива?
-                                        });
+                                        return model
+                                            .ajaxPromise(
+                                                "DELETE",
+                                                "/States('" + oState._id + "')"
+                                            )
+                                            .then(function () {
+                                                delete oState._METHOD;
+                                                // TODO удалять из массива?
+                                            });
                                     default:
                                         return Promise.resolve();
                                 }
