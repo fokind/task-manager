@@ -34,7 +34,7 @@
 					<dnd:DropInfo groupName="taskList" targetAggregation="items" dropPosition="Between" drop="onDrop"/>
 					<dnd:DragDropInfo sourceAggregation="items" targetAggregation="items" dropPosition="Between" drop="onDrop"/>
 				</dragDropConfig>
-				<StandardListItem title="{kanban>title}" type="Active" press="onDetailPress"/>
+				<StandardListItem title="{kanban>title}" type="Active" press="onEditTaskPress"/>
 			</List>
 		</grid:CSSGrid>
 	</Page>

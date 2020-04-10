@@ -2,10 +2,6 @@ sap.ui.define(
     [
         "sap/ui/core/mvc/Controller",
         "sap/m/MessageToast",
-        "sap/m/Dialog",
-        "sap/m/VBox",
-        "sap/m/TextArea",
-        "sap/m/Button",
         "sap/ui/core/Fragment",
         "sap/ui/model/json/JSONModel",
         "sap/m/library",
@@ -14,10 +10,6 @@ sap.ui.define(
     function (
         Controller,
         MessageToast,
-        Dialog,
-        VBox,
-        TextArea,
-        Button,
         Fragment,
         JSONModel,
         mobileLibrary,
@@ -85,7 +77,6 @@ sap.ui.define(
             },
 
             onCreateTaskOkPress: function () {
-                // debugger;
                 var oDialog = this.byId("createTaskDialog");
                 var oTaskModel = oDialog.getModel("task");
                 var oKanbanModel = this.getView().getModel("kanban");
@@ -99,7 +90,6 @@ sap.ui.define(
                 model
                     .ajaxPromise("POST", "/Tasks", oTask)
                     .then(function (oData) {
-                        console.log(oData);
                         oTask._id = oData._id;
                         aTasks.push(oTask);
                         oKanbanModel.refresh();
@@ -119,76 +109,58 @@ sap.ui.define(
                 );
             },
 
-            _openDialog: function (sTitle, fnCallback) {
-                var oDialog = new Dialog({
-                    title: "Title",
-                    content: [
-                        new VBox({
-                            items: [
-                                new TextArea("title", {
-                                    width: "100%",
-                                    value: sTitle,
-                                    placeholder: "Input something...",
-                                }),
-                            ],
-                        }).addStyleClass("sapUiTinyMargin"),
-                    ],
-                    beginButton: new Button({
-                        type: ButtonType.Emphasized,
-                        text: "OK",
-                        press: function () {
-                            var sText = sap.ui
-                                .getCore()
-                                .byId("title")
-                                .getValue();
-                            fnCallback(null, sText);
-                            oDialog.close();
-                        },
-                    }),
-                    endButton: new Button({
-                        text: "Cancel",
-                        press: function () {
-                            oDialog.close();
-                        },
-                    }),
-                    afterClose: function () {
-                        oDialog.destroy();
-                    },
-                });
-
-                oDialog.open();
-            },
-
-            onDetailPress: function (oEvent) {
+            onEditTaskPress: function (oEvent) {
                 var oBindingContext = oEvent
                     .getSource()
                     .getBindingContext("kanban");
-                var sPath = oBindingContext.getPath();
-                var sTitle = oBindingContext.getProperty("title");
+                var oData = {
+                    _sPath: oBindingContext.getPath(),
+                    _id: oBindingContext.getProperty("_id"),
+                    title: oBindingContext.getProperty("title"),
+                };
+                var oView = this.getView();
+                var oDialog = this.byId("editTaskDialog");
+                if (!oDialog) {
+                    Fragment.load({
+                        id: oView.getId(),
+                        name: "fokind.kanban.fragment.EditTaskDialog",
+                        controller: this,
+                    }).then(function (oDialog) {
+                        oView.addDependent(oDialog);
+                        oDialog.setModel(new JSONModel(oData), "task");
+                        oDialog.open();
+                    });
+                } else {
+                    oDialog.getModel("task").setData(oData);
+                    oDialog.open();
+                }
+            },
 
-                this._openDialog(
-                    sTitle,
-                    function (oError, sText) {
-                        oBindingContext
-                            .getModel()
-                            .setProperty(sPath + "/title", sText);
-
-                        var sTaskId = oBindingContext.getProperty("_id");
-                        var sTitle = oBindingContext.getProperty("title");
-
-                        var oDelta = {
-                            title: sTitle,
-                        };
-
-                        this._saveTaskPromise(sTaskId, oDelta).then(
-                            function () {
-                                MessageToast.show(
-                                    "Изменения успешно сохранены."
-                                );
-                            }
+            onEditTaskOkPress: function () {
+                var oDialog = this.byId("editTaskDialog");
+                var oTaskModel = oDialog.getModel("task");
+                var oKanbanModel = this.getView().getModel("kanban");
+                var sPath = oTaskModel.getProperty("/_sPath");
+                var oTask = {
+                    title: oTaskModel.getProperty("/title"),
+                };
+                model
+                    .ajaxPromise(
+                        "PATCH",
+                        "/Tasks('" + oTaskModel.getProperty("/_id") + "')",
+                        oTask
+                    )
+                    .then(function () {
+                        oKanbanModel.setProperty(
+                            sPath + "/title",
+                            oTaskModel.getProperty("/title")
                         );
-                    }.bind(this)
-                );
+                        oDialog.close();
+                    });
+            },
+
+            onEditTaskCancelPress: function () {
+                this.byId("editTaskDialog").close();
             },
 
             onDrop: function (oEvent) {
