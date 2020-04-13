@@ -164,7 +164,6 @@ sap.ui.define(
             },
 
             onDrop: function (oEvent) {
-                // FIXME внутри одного списка срабатывает дважды
                 var oDraggedItem = oEvent
                     .getParameter("draggedControl")
                     .getBindingContext("kanban")
