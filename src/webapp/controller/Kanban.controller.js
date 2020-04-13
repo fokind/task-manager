@@ -164,34 +164,41 @@ sap.ui.define(
             },
 
             onDrop: function (oEvent) {
+                // FIXME внутри одного списка срабатывает дважды
                 var oDraggedItem = oEvent
                     .getParameter("draggedControl")
                     .getBindingContext("kanban")
                     .getObject();
 
-                // удалить из исходного
-                var oDraggedList = oEvent
+                // не забыть удалить из исходного
+                var oDraggedListControl = oEvent
                     .getParameter("draggedControl")
-                    .getParent()
+                    .getParent();
+                var oDraggedList = oDraggedListControl
                     .getBindingContext("kanban")
                     .getProperty("Tasks");
                 var iDraggedIndex = oDraggedList.indexOf(oDraggedItem);
-                oDraggedList.splice(iDraggedIndex, 1);
 
-                // добавить в целевой
                 var sDropPosition = oEvent.getParameter("dropPosition");
                 var oDroppedListControl;
                 var oDroppedList;
+                var fOrder = 0;
+
+                // зависит от dropPosition
+                // если On то просто добавляем в список
+                // находим индекс
+                // если Before и элемент первый, тогда ордер - 1
+                // если After и элемент последний, тогда ордер + 1
+                // иначе берем недостающий элемент по индексу и ордер = среднее арифметическое
 
                 if (sDropPosition === "On") {
                     oDroppedListControl = oEvent.getParameter("droppedControl");
                     oDroppedList = oDroppedListControl
                         .getBindingContext("kanban")
                         .getProperty("Tasks");
-                    oDroppedList.push(oDraggedItem);
                 } else {
-                    var oDroppedItem = oEvent
-                        .getParameter("droppedControl")
+                    var oDroppedControl = oEvent.getParameter("droppedControl");
+                    var oDroppedItem = oDroppedControl
                         .getBindingContext("kanban")
                         .getObject();
                     oDroppedListControl = oEvent
@@ -200,10 +207,39 @@ sap.ui.define(
                     oDroppedList = oDroppedListControl
                         .getBindingContext("kanban")
                         .getProperty("Tasks");
-                    var iDroppedIndex =
-                        oDroppedList.indexOf(oDroppedItem) +
-                        (sDropPosition === "After" ? 1 : 0);
-                    oDroppedList.splice(iDroppedIndex, 0, oDraggedItem);
+                    var iDroppedIndex = oDroppedListControl
+                        .getItems()
+                        .indexOf(oDroppedControl);
+
+                    if (
+                        sDropPosition === "After" &&
+                        iDroppedIndex + 1 === oDroppedList.length
+                    ) {
+                        fOrder = oDroppedItem.order + 1;
+                    } else if (
+                        sDropPosition === "Before" &&
+                        iDroppedIndex === 0
+                    ) {
+                        fOrder = oDroppedItem.order - 1;
+                    } else {
+                        var oDroppedIndex1 =
+                            iDroppedIndex +
+                            (sDropPosition === "After" ? 1 : -1);
+                        var oDroppedControl1 = oDroppedListControl.getItems()[
+                            oDroppedIndex1
+                        ];
+                        var oDroppedItem1 = oDroppedControl1
+                            .getBindingContext("kanban")
+                            .getObject();
+                        fOrder = (oDroppedItem.order + oDroppedItem1.order) / 2;
+                    }
+                }
+
+                oDraggedItem.order = fOrder;
+
+                if (oDraggedListControl !== oDroppedListControl) {
+                    oDraggedList.splice(iDraggedIndex, 1);
+                    oDroppedList.push(oDraggedItem); // список с сортировкой, поэтому можно добавить в конец массива
                 }
 
                 this.getView().getModel("kanban").refresh();
@@ -215,7 +251,7 @@ sap.ui.define(
                     .getProperty("_id");
 
                 var oDelta = {
-                    // order: oDraggedItem.order,
+                    order: oDraggedItem.order,
                     stateId: sStateId,
                 };
 
