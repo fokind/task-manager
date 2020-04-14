@@ -1,20 +1,20 @@
 <core:FragmentDefinition xmlns="sap.m" 
 	xmlns:form="sap.ui.layout.form" 
 	xmlns:core="sap.ui.core">
-	<Dialog id="createTaskDialog" title="Task">
+	<Dialog id="createStateDialog" title="State">
 		<content>
 			<form:SimpleForm editable="true" layout="ResponsiveGridLayout">
 				<form:content>
 					<Label text="Title"/>
-					<Input value="{task>/title}"/>
+					<Input value="{state>/title}"/>
 				</form:content>
 			</form:SimpleForm>
 		</content>
 		<beginButton>
-			<Button text="OK" press=".onCreateTaskOkPress"/>
+			<Button text="OK" press=".onCreateStateOkPress"/>
 		</beginButton>
 		<endButton>
-			<Button text="Cancel" press=".onCreateTaskCancelPress"/>
+			<Button text="Cancel" press=".onCreateStateCancelPress"/>
 		</endButton>
 	</Dialog>
 </core:FragmentDefinition>

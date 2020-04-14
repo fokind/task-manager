@@ -37,21 +37,57 @@ sap.ui.define(
                     .getBindingContext()
                     .requestObject()
                     .then(function (oData) {
+                        var aStates = oData.States;
+
+                        for (let i = 0; i < aStates.length; i++) {
+                            aStates[i]._METHOD = "";
+                        }
+
                         oView.getModel("draft").setData(oData);
                     });
             },
 
-            onStatesSumbmit: function (oEvent) {
-                var oSource = oEvent.getSource();
-                oSource.setValue("");
-                var oDraftModel = oSource.getModel("draft");
+            onAddStatePress: function () {
+                var oView = this.getView();
+                var oDialog = this.byId("createStateDialog");
+                var oData = {
+                    title: "",
+                };
+
+                if (!oDialog) {
+                    Fragment.load({
+                        id: oView.getId(),
+                        name: "fokind.kanban.fragment.CreateStateDialog",
+                        controller: this,
+                    }).then(function (oDialog) {
+                        oView.addDependent(oDialog);
+                        oDialog.setModel(new JSONModel(oData), "state");
+                        oDialog.open();
+                    });
+                } else {
+                    oDialog.getModel("state").setData(oData);
+                    oDialog.open();
+                }
+            },
+
+            onCreateStateOkPress: function () {
+                var oDialog = this.byId("createStateDialog");
+                var oStateModel = oDialog.getModel("state");
+                var oDraftModel = this.getView().getModel("draft");
                 var aStates = oDraftModel.getProperty("/States");
                 aStates.push({
                     _METHOD: "CREATE",
+                    title: oStateModel.getProperty("/title"),
                     order: aStates.length,
-                    title: oEvent.getParameter("value"),
+                    projectId: oDraftModel.getProperty("/_id"),
                 });
-                oDraftModel.refresh();
+                oDraftModel.refresh(true);
+
+                oDialog.close();
+            },
+
+            onCreateStateCancelPress: function () {
+                this.byId("createStateDialog").close();
             },
 
             onStatePress: function (oEvent) {
@@ -103,15 +139,16 @@ sap.ui.define(
             },
 
             onStateDelete: function (oEvent) {
-                var oBindingContext = oEvent
-                    .getSource()
-                    .getBindingContext("draft");
+                var oLIstItem = oEvent.getParameter("listItem");
+                var oBindingContext = oLIstItem.getBindingContext("draft");
                 oBindingContext
                     .getModel()
                     .setProperty(
                         oBindingContext.getPath() + "/_METHOD",
                         "DELETE"
                     );
+
+                oBindingContext.getModel().refresh(true);
             },
 
             onDeleteProjectPress: function () {
@@ -185,6 +222,64 @@ sap.ui.define(
                     oView.getModel().refresh();
                     MessageToast.show("Изменения успешно сохранены.");
                 });
+            },
+
+            onStateDrop: function (oEvent) {
+                var oDraftModel = this.getView().getModel("draft");
+                var oDraggedItem = oEvent
+                    .getParameter("draggedControl")
+                    .getBindingContext("draft")
+                    .getObject();
+
+                var sDropPosition = oEvent.getParameter("dropPosition");
+                var oDroppedListControl;
+                var oDroppedList;
+                var fOrder = 0;
+
+                if (sDropPosition !== "On") {
+                    var oDroppedControl = oEvent.getParameter("droppedControl");
+                    var oDroppedItem = oDroppedControl
+                        .getBindingContext("draft")
+                        .getObject();
+                    oDroppedListControl = oEvent
+                        .getParameter("droppedControl")
+                        .getParent();
+                    oDroppedList = oDraftModel.getProperty("/States");
+                    var iDroppedIndex = oDroppedListControl
+                        .getItems()
+                        .indexOf(oDroppedControl);
+
+                    if (
+                        sDropPosition === "After" &&
+                        iDroppedIndex + 1 === oDroppedList.length
+                    ) {
+                        fOrder = oDroppedItem.order + 1;
+                    } else if (
+                        sDropPosition === "Before" &&
+                        iDroppedIndex === 0
+                    ) {
+                        fOrder = oDroppedItem.order - 1;
+                    } else {
+                        var oDroppedIndex1 =
+                            iDroppedIndex +
+                            (sDropPosition === "After" ? 1 : -1);
+                        var oDroppedControl1 = oDroppedListControl.getItems()[
+                            oDroppedIndex1
+                        ];
+                        var oDroppedItem1 = oDroppedControl1
+                            .getBindingContext("draft")
+                            .getObject();
+                        fOrder = (oDroppedItem.order + oDroppedItem1.order) / 2;
+                    }
+                }
+
+                oDraggedItem.order = fOrder;
+
+                if (!oDraggedItem._METHOD) {
+                    oDraggedItem._METHOD = "UPDATE";
+                }
+
+                oDraftModel.refresh(true);
             },
 
             onBackPress: function () {

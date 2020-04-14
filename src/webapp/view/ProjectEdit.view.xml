@@ -1,29 +1,57 @@
 <View controllerName="fokind.kanban.controller.ProjectEdit" 
 	xmlns:mvc="sap.ui.core.mvc" 
 	xmlns:form="sap.ui.layout.form" 
+	xmlns:dnd="sap.ui.core.dnd" 
+	xmlns:uxap="sap.uxap" 
 	xmlns="sap.m" displayBlock="true">
 	<Page title="Project: {draft>/title}" showNavButton="true" navButtonPress="onBackPress">
 		<headerContent>
 			<Button icon="sap-icon://delete" press="onDeleteProjectPress"/>
 			<Button icon="sap-icon://save" press="onSavePress"/>
 		</headerContent>
-		<form:SimpleForm editable="true" layout="ResponsiveGridLayout">
-			<form:content>
-				<Label text="Title"/>
-				<Input value="{draft>/title}"/>
-				<Label text="States"/>
-				<MultiInput tokens="{
-						model: 'draft',
-						path: '/States',
-						sorter: {
-							path: 'order'
-						}
-					}" showValueHelp="false" submit="onStatesSumbmit">
-					<tokens>
-						<Token text="{draft>title}" press="onStatePress" delete="onStateDelete"/>
-					</tokens>
-				</MultiInput>
-			</form:content>
-		</form:SimpleForm>
+		<uxap:ObjectPageLayout showAnchorBar="false">
+			<uxap:sections>
+				<uxap:ObjectPageSection>
+					<uxap:subSections>
+						<uxap:ObjectPageSubSection title="Common">
+							<form:SimpleForm editable="true" layout="ResponsiveGridLayout">
+								<form:content>
+									<Label text="Title"/>
+									<Input value="{draft>/title}"/>
+								</form:content>
+							</form:SimpleForm>
+						</uxap:ObjectPageSubSection>
+					</uxap:subSections>
+				</uxap:ObjectPageSection>
+				<uxap:ObjectPageSection>
+					<uxap:subSections>
+						<uxap:ObjectPageSubSection title="States">
+							<uxap:blocks>
+								<VBox>
+									<List items="{
+											model: 'draft',
+											path: '/States',
+											filters: [{
+												path: '_METHOD',
+												operator: 'NE',
+												value1: 'DELETE'
+											}],
+											sorter: {
+												path: 'order'
+											}
+										}" mode="Delete" delete="onStateDelete">
+										<StandardListItem title="{draft>title}" type="Active" press="onStatePress"/>
+										<dragDropConfig>
+											<dnd:DragDropInfo sourceAggregation="items" targetAggregation="items" dropPosition="Between" drop="onStateDrop"/>
+										</dragDropConfig>
+									</List>
+									<Button icon="sap-icon://add" press="onAddStatePress" type="Transparent"/>
+								</VBox>
+							</uxap:blocks>
+						</uxap:ObjectPageSubSection>
+					</uxap:subSections>
+				</uxap:ObjectPageSection>
+			</uxap:sections>
+		</uxap:ObjectPageLayout>
 	</Page>
 </View>
