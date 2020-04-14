@@ -235,13 +235,9 @@ sap.ui.define(
                 }
 
                 oDraggedItem.order = fOrder;
-
-                if (oDraggedListControl !== oDroppedListControl) {
-                    oDraggedList.splice(iDraggedIndex, 1);
-                    oDroppedList.push(oDraggedItem); // список с сортировкой, поэтому можно добавить в конец массива
-                }
-
-                this.getView().getModel("kanban").refresh();
+                oDraggedList.splice(iDraggedIndex, 1);
+                oDroppedList.push(oDraggedItem); // список с сортировкой, поэтому можно добавить в конец массива
+                this.getView().getModel("kanban").refresh(true);
 
                 // сохранить изменения
                 var sTaskId = oDraggedItem._id;
