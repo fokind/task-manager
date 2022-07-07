@@ -27,7 +27,7 @@
     "dependencies": {
         "dotenv": "^8.1.0",
         "express": "^4.17.1",
-        "moment": "^2.24.0",
+        "moment": "^2.29.4",
         "mongodb": "^3.3.2",
         "odata-v4-mongodb": "^0.1.12",
         "odata-v4-server": "^0.2.13",
